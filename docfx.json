@@ -20,13 +20,20 @@
     "output": "_site",
     "template": [
       "default",
-      "modern"
+      "modern",
+      "template"
+    ],
+    "postProcessors": [
+      "ExtractSearchIndex"
     ],
     "globalMetadata": {
-      "_appName": "CodeBlock.DevDocs",
-      "_appTitle": "CodeBlock.DevDocs",
+      "_appFooter": "<span>This is a test footer</span>",
+      "_appName": "CodeBlock.Dev",
+      "_appTitle": "CodeBlock.Dev",
       "_enableSearch": true,
-      "pdf": false
+      "pdf": false,
+      "_appLogoPath": "images/logo.png",
+      "_appFaviconPath": "images/favicon.ico"
     }
   }
 }
