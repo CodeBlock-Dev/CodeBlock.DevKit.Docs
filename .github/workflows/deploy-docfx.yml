@@ -3,7 +3,7 @@ name: Deploy Documentation
 on:
   push:
     branches:
-      - main # Trigger deploy when code is pushed to main
+      - gh-pages
 
 jobs:
   build:
