@@ -1,42 +1,44 @@
+name: Deploy Docs to Production
+
 on:
   push:
     branches:
       - main
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  actions: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  publish-docs:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: self-hosted
+    environment: production
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Dotnet Setup
+
+      - name: Set up .NET and docfx
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.x
+          dotnet-version: "8.x"
 
-      - run: dotnet tool update -g docfx
-      - run: docfx ./docfx.json
+      - name: Install docfx
+        run: |
+          dotnet tool install --global docfx
+          docfx --version  # Verify docfx installation
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: "./_site"
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Build docs with docfx
+        run: |
+          docfx build  # Build the docs
+
+      - name: Zip the build output
+        run: |
+          $outputPath = './_site'  # Path to the built documentation
+          $zipPath = 'C:\Hosting\CodeBlock.Dev\Production\Docs\docs.zip'  # Path to where you want the zip file
+          # Create a zip of the output directory
+          Compress-Archive -Path $outputPath -DestinationPath $zipPath -Force
+
+      - name: Extract zip
+        run: |
+          $destinationPath = 'C:\Hosting\CodeBlock.Dev\Production\Docs'
+          $zipFile = "$destinationPath\docs.zip"
+          # Extract the zip file to the IIS folder
+          Expand-Archive -Path $zipFile -DestinationPath $destinationPath -Force
+          # Remove the zip file after extraction
+          Remove-Item -Path $zipFile
