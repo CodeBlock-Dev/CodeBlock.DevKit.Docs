@@ -1,35 +1,34 @@
-name: Deploy DocFX Documentation
+name: Deploy Documentation
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: "6.0.x" # Use compatible .NET SDK version for DocFX
+          dotnet-version: "6.0" # Adjust the version if necessary
 
-      - name: Install DocFX
+      - name: Install DocFX tool
         run: |
           dotnet tool install -g docfx
-          echo "::add-path::$(dotnet tool path)"
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - name: Build DocFX documentation
-        run: docfx docfx_project/docfx.json
+      - name: Build documentation with DocFX
+        run: docfx build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docfx_project/_site
-          publish_branch: main # Deploy directly to the main branch
+          publish_dir: ./_site
+          publish_branch: main # or 'gh-pages' depending on your setup
