@@ -29,9 +29,9 @@ jobs:
 
       - name: Zip the build output
         run: |
-          $outputPath = './_site'  # Path to the built documentation
+          $outputPath = './_site/*'  # Path to the contents of the _site folder (not the folder itself)
           $zipPath = 'C:\Hosting\CodeBlock.Dev\Production\Docs\docs.zip'  # Path to where you want the zip file
-          # Create a zip of the output directory
+          # Create a zip of the contents of the _site folder
           Compress-Archive -Path $outputPath -DestinationPath $zipPath -Force
 
       - name: Extract zip
